@@ -1,0 +1,4 @@
+# Install with: ansible-galaxy collection install -r ansible/requirements.yml
+collections:
+  - name: amazon.aws          # dynamic EC2 inventory
+  - name: community.docker    # docker_image / docker_container modules

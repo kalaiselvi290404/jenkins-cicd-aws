@@ -1,0 +1,62 @@
+---
+# Rolling deploy playbook.
+#
+# serial: 1  -> update ONE host at a time. Ansible finishes a host completely
+# (pull new image, restart container, confirm healthy) before touching the
+# next. With 2+ hosts behind the ALB, at least one is always serving traffic,
+# so the deploy has zero downtime.
+#
+# Run by the Jenkins "Rolling deploy" stage, which passes image_uri,
+# aws_region, and ecr_registry via -e.
+
+- name: Rolling deploy of the CI/CD demo app
+  hosts: role_cicd_app          # group created by the dynamic inventory
+  become: true
+  serial: 1
+  max_fail_percentage: 0        # if any host fails, stop — don't cascade
+
+  vars:
+    container_name: cicd-app
+    app_port: 5000
+
+  tasks:
+
+    - name: Authenticate Docker to ECR
+      # The app host uses its own IAM instance role for ECR read access.
+      ansible.builtin.shell: >
+        aws ecr get-login-password --region {{ aws_region }}
+        | docker login --username AWS --password-stdin {{ ecr_registry }}
+      changed_when: false
+
+    - name: Pull the new image
+      community.docker.docker_image:
+        name: "{{ image_uri }}"
+        source: pull
+
+    - name: Stop and remove the old container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        state: absent
+
+    - name: Start the new container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ image_uri }}"
+        state: started
+        restart_policy: always
+        published_ports:
+          - "{{ app_port }}:5000"
+
+    - name: Wait until this host reports healthy before moving on
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ app_port }}/health"
+        status_code: 200
+        return_content: true
+      register: health
+      retries: 10
+      delay: 3
+      until: health.status == 200 and 'healthy' in health.content
+
+    - name: Show which version is now live on this host
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} is healthy on image {{ image_uri }}"

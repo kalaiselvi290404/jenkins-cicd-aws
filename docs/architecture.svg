@@ -1,0 +1,95 @@
+<svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',system-ui,sans-serif">
+  <defs>
+    <style>
+      .bg{fill:#0d1520}
+      .card{fill:#141f2e;stroke:#2a3a4f;stroke-width:1.5;rx:10}
+      .label{fill:#e6edf3;font-size:14px;font-weight:600}
+      .sub{fill:#8aa0b6;font-size:11px}
+      .accent{fill:#3ddc84}
+      .accentstroke{stroke:#3ddc84;stroke-width:2;fill:none}
+      .wire{stroke:#2a3a4f;stroke-width:2;fill:none}
+      .wiretxt{fill:#6f869d;font-size:10px}
+      .title{fill:#e6edf3;font-size:20px;font-weight:700}
+      .tag{fill:#3ddc84;font-size:10px;font-weight:700;letter-spacing:1px}
+    </style>
+    <marker id="arw" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#3ddc84"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="900" height="560"/>
+  <text class="tag" x="40" y="42">CI / CD PIPELINE</text>
+  <text class="title" x="40" y="66">Commit → Rolling Deploy on AWS</text>
+
+  <!-- git push -->
+  <rect class="card" x="40" y="110" width="150" height="64" rx="10"/>
+  <text class="label" x="60" y="138">git push</text>
+  <text class="sub" x="60" y="157">developer → main</text>
+
+  <!-- GitHub -->
+  <rect class="card" x="230" y="110" width="150" height="64" rx="10"/>
+  <text class="label" x="250" y="138">GitHub</text>
+  <text class="sub" x="250" y="157">webhook fires</text>
+
+  <!-- Jenkins -->
+  <rect class="card" x="420" y="100" width="200" height="84" rx="10"/>
+  <rect x="420" y="100" width="6" height="84" class="accent" rx="3"/>
+  <text class="label" x="444" y="128">Jenkins</text>
+  <text class="sub" x="444" y="147">dedicated EC2 · IAM role</text>
+  <text class="sub" x="444" y="164">Test ▸ Build ▸ Push</text>
+
+  <!-- ECR -->
+  <rect class="card" x="670" y="110" width="180" height="64" rx="10"/>
+  <text class="label" x="690" y="138">Amazon ECR</text>
+  <text class="sub" x="690" y="157">image : &lt;git-sha&gt;</text>
+
+  <!-- wires top row -->
+  <line class="wire" x1="190" y1="142" x2="228" y2="142" marker-end="url(#arw)"/>
+  <line class="wire" x1="380" y1="142" x2="418" y2="142" marker-end="url(#arw)"/>
+  <line class="wire" x1="620" y1="142" x2="668" y2="142" marker-end="url(#arw)"/>
+
+  <!-- Ansible band -->
+  <rect class="card" x="230" y="250" width="420" height="60" rx="10"/>
+  <rect x="230" y="250" width="6" height="60" class="accent" rx="3"/>
+  <text class="label" x="254" y="278">Ansible — rolling deploy</text>
+  <text class="sub" x="254" y="296">serial : 1  ·  health-checked  ·  one host at a time</text>
+
+  <!-- ECR down to Ansible -->
+  <path class="wire" d="M760,174 L760,280 L652,280" marker-end="url(#arw)"/>
+  <text class="wiretxt" x="770" y="230">pull</text>
+
+  <!-- Jenkins down to Ansible -->
+  <path class="wire" d="M520,184 L520,248" marker-end="url(#arw)"/>
+
+  <!-- app instances -->
+  <rect class="card" x="250" y="380" width="170" height="70" rx="10"/>
+  <text class="label" x="270" y="408">app-1</text>
+  <text class="sub" x="270" y="427">EC2 · AZ-a · :5000</text>
+  <circle cx="395" cy="405" r="6" class="accent"/>
+
+  <rect class="card" x="460" y="380" width="170" height="70" rx="10"/>
+  <text class="label" x="480" y="408">app-2</text>
+  <text class="sub" x="480" y="427">EC2 · AZ-b · :5000</text>
+  <circle cx="605" cy="405" r="6" class="accent"/>
+
+  <!-- ansible to apps -->
+  <path class="wire" d="M400,310 L335,378" marker-end="url(#arw)"/>
+  <path class="wire" d="M480,310 L545,378" marker-end="url(#arw)"/>
+
+  <!-- ALB -->
+  <rect class="card" x="300" y="486" width="280" height="54" rx="10"/>
+  <rect x="300" y="486" width="6" height="54" class="accent" rx="3"/>
+  <text class="label" x="324" y="510">Application Load Balancer</text>
+  <text class="sub" x="324" y="528">/health · 200 · always ≥1 serving</text>
+
+  <!-- apps to ALB -->
+  <path class="wire" d="M335,450 L400,484" marker-end="url(#arw)"/>
+  <path class="wire" d="M545,450 L480,484" marker-end="url(#arw)"/>
+
+  <!-- users -->
+  <text class="tag" x="620" y="516">USERS ▸</text>
+  <line class="accentstroke" x1="582" y1="513" x2="612" y2="513" marker-end="url(#arw)"/>
+
+  <!-- test gate note -->
+  <text class="sub" x="444" y="205" font-style="italic">tests fail → no image built</text>
+</svg>

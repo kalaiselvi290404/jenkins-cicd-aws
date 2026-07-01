@@ -1,0 +1,24 @@
+# Ansible dynamic inventory — discovers the app EC2 instances at deploy time
+# by tag, so you never hardcode IPs. New instances (e.g. after scaling) are
+# picked up automatically.
+#
+# Targets instances tagged Role=cicd-app in the chosen region.
+plugin: amazon.aws.aws_ec2
+
+regions:
+  - ap-south-1
+
+filters:
+  tag:Role: cicd-app
+  instance-state-name: running
+
+# Group all matching hosts under "app_servers" and connect via public IP.
+keyed_groups:
+  - key: tags.Role
+    prefix: role
+
+hostnames:
+  - ip-address
+
+compose:
+  ansible_host: public_ip_address

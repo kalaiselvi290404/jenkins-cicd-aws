@@ -1,0 +1,16 @@
+# Fill in the two values below, then Terraform will use them automatically.
+# (This file is gitignored — it won't be committed, which is correct.)
+
+# The NAME of an existing EC2 key pair in your region.
+# Create one: AWS Console → EC2 → Key Pairs → Create key pair (download the .pem).
+# Put just the name here, not the file. Example: "kalaiselvi-key"
+key_name = ""
+
+# YOUR public IP in CIDR form, so only you can reach SSH + the Jenkins UI.
+# Get it from https://whatismyip.com then add /32.
+# Example: "203.0.113.45/32"
+my_ip_cidr = ""
+
+# Optional overrides (defaults are fine for this build):
+# aws_region         = "ap-south-1"   # Mumbai
+# app_instance_count = 2              # >=2 for zero-downtime rolling deploy
