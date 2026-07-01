@@ -38,11 +38,18 @@ resource "aws_security_group" "app" {
     security_groups = [aws_security_group.alb.id]
   }
   ingress {
-    description = "SSH from my IP (for Ansible + debugging)"
+    description = "SSH from my IP (for debugging)"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [var.my_ip_cidr]
+  }
+  ingress {
+    description     = "SSH from Jenkins for Ansible rolling deploy"
+    from_port       = 22
+    to_port         = 22
+    protocol        = "tcp"
+    security_groups = [aws_security_group.jenkins.id]
   }
   egress {
     from_port   = 0
