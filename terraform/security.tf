@@ -80,9 +80,22 @@ resource "aws_security_group" "jenkins" {
     protocol    = "tcp"
     cidr_blocks = [var.my_ip_cidr]
   }
-  # NOTE: GitHub webhooks come from GitHub's IP ranges. For a portfolio build,
-  # the simplest robust option is to open 8080 to GitHub's documented hook
-  # ranges, OR use a lightweight tunnel. See RUNBOOK Phase 4 for the tradeoff.
+  ingress {
+    description      = "GitHub webhook IP ranges"
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    cidr_blocks      = [
+      "192.30.252.0/22",
+      "185.199.108.0/22",
+      "140.82.112.0/20",
+      "143.55.64.0/20",
+    ]
+    ipv6_cidr_blocks = [
+      "2a0a:a440::/29",
+      "2606:50c0::/32",
+    ]
+  }
   egress {
     from_port   = 0
     to_port     = 0
