@@ -24,6 +24,22 @@ resource "aws_iam_role_policy_attachment" "jenkins_ecr_power" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 }
 
+# Ansible dynamic inventory needs DescribeInstances/DescribeTags to discover
+# the app EC2 hosts at deploy time. Scope is read-only.
+resource "aws_iam_role_policy" "jenkins_ec2_describe" {
+  name = "${var.project_name}-jenkins-ec2-describe"
+  role = aws_iam_role.jenkins.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["ec2:DescribeInstances", "ec2:DescribeTags"]
+      Resource = "*"
+    }]
+  })
+}
+
 resource "aws_iam_instance_profile" "jenkins" {
   name = "${var.project_name}-jenkins-profile"
   role = aws_iam_role.jenkins.name
