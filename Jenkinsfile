@@ -16,9 +16,9 @@ pipeline {
     environment {
         // ---- EDIT THESE for the environment ----
         AWS_REGION   = 'ap-south-1'                 // Mumbai; matches Chennai user
-        ECR_REGISTRY = ''                           // e.g. 123456789012.dkr.ecr.ap-south-1.amazonaws.com
+        ECR_REGISTRY = '930478468332.dkr.ecr.ap-south-1.amazonaws.com'
         ECR_REPO     = 'kalaiselvi-cicd-app'
-        ALB_DNS      = ''                           // from `terraform output alb_dns_name`
+        ALB_DNS      = 'kalaiselvi-cicd-alb-2011343548.ap-south-1.elb.amazonaws.com'
         // ----------------------------------------
 
         // Short git SHA — used as the immutable image tag and the live version.
